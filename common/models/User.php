@@ -25,6 +25,8 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
+    
+    public $is_change_password = false;
 
 
     /**
@@ -54,6 +56,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['username', 'password_hash', 'email'], 'required'],
             [['username', 'email'], 'unique'],
             ['role', 'integer'],
+            ['is_change_password', 'boolean'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
         ];

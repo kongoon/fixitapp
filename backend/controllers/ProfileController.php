@@ -106,14 +106,34 @@ class ProfileController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $profile = $this->findModel($id);
+        $user = User::findOne($profile->user_id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->user_id]);
+        if ($profile->load(Yii::$app->request->post()) && $user->load(Yii::$app->request->post())) {
+            
+            $transaction = Yii::$app->db->beginTransaction();
+            if($user->is_change_password){
+                $user->password_hash = Yii::$app->security->generatePasswordHash($user->password_hash);
+            }
+            try{
+                $user->save();
+                $profile->user_id = $user->id;
+                $profile->save();
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', 'บันทึกข้อมูลเรียบร้อย');
+                return $this->redirect(['view', 'id' => $profile->user_id]);
+               
+            }catch(Exception $e){
+                $transaction->rollBack();
+                echo $e->getMessage();
+                
+            }
+        
         }
 
         return $this->render('update', [
-            'model' => $model,
+            'profile' => $profile,
+            'user' => $user
         ]);
     }
 

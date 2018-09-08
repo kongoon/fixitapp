@@ -16,6 +16,9 @@ use common\models\Department;
 
     <?= $form->field($user, 'username')?>
     
+    <?php if(!$user->isNewRecord){?>
+        <?= $form->field($user, 'is_change_password')->checkbox()?>
+    <?php }?>
     <?= $form->field($user, 'password_hash')?>
     
     <?= $form->field($user, 'email')?>

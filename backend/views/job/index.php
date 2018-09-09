@@ -116,7 +116,7 @@ Modal::end();
 <?php $this->registerJs('
 function init_click(){
     $(".job-view").click(function(e){
-    var job_id = $(this).data("id");
+        var job_id = $(this).data("id");
         $.get("'.Url::to(['view'], true).'",
             {
                 id: job_id

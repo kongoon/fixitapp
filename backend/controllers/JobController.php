@@ -52,7 +52,7 @@ class JobController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
+        return $this->renderAjax('view', [
             'model' => $this->findModel($id),
         ]);
     }
@@ -86,8 +86,23 @@ class JobController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if($model->job_status_id == 2 && empty($model->receive_by)){
+                $model->receive_by = Yii::$app->user->getId();
+                $model->receive_at = time();
+            }
+            if($model->job_status_id >=3 && empty($model->repair_by)){
+                $model->repair_by = Yii::$app->user->getId();
+                $model->repair_at = time();
+            }
+            if($model->save()){
+                Yii::$app->session->setFlash('success', 'บันทึกข้อมูลเรียบร้อย');
+                return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                Yii::$app->session->setFlash('error', 'เกิดข้อผิดพลาด');
+            }
+            return $this->redirect(['index']);
+            
         }
 
         return $this->render('update', [
@@ -123,5 +138,46 @@ class JobController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    
+    public function actionReceive($id)
+    {
+        $model = $this->findModel($id);
+        $model->receive_by = Yii::$app->user->getId();
+        $model->receive_at = time();
+        $model->job_status_id = 2;
+        if($model->save()){
+            Yii::$app->session->setFlash('success', 'รับงานเรียบร้อยแล้ว');
+        }else{
+            Yii::$app->session->setFlash('error', 'เกิดข้อผิดพลาด');
+        }
+        return $this->redirect(['index']);
+    }
+    
+    public function actionComplete($id)
+    {
+        $model = $this->findModel($id);
+        $model->repair_by = Yii::$app->user->getId();
+        $model->repair_at = time();
+        $model->job_status_id = 3;
+        if($model->save()){
+            Yii::$app->session->setFlash('success', 'ดำเนินการเรียบร้อยแล้ว');
+        }else{
+            Yii::$app->session->setFlash('error', 'เกิดข้อผิดพลาด');
+        }
+        return $this->redirect(['index']);
+    }
+    public function actionReject($id)
+    {
+        $model = $this->findModel($id);
+        $model->repair_by = Yii::$app->user->getId();
+        $model->repair_at = time();
+        $model->job_status_id = 4;
+        if($model->save()){
+            Yii::$app->session->setFlash('success', 'ยกเลิกเรียบร้อยแล้ว');
+        }else{
+            Yii::$app->session->setFlash('error', 'เกิดข้อผิดพลาด');
+        }
+        return $this->redirect(['index']);
     }
 }

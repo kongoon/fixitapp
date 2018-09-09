@@ -101,4 +101,9 @@ class Profile extends \yii\db\ActiveRecord
     {
         return Yii::getAlias('@webroot').'/'.$this->uploadPhoto.'/';
     }
+    
+    public function getFullname()
+    {
+        return $this->firstname.' '.$this->lastname;
+    }
 }

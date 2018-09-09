@@ -55,6 +55,8 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['username', 'password_hash', 'email'], 'required'],
             [['username', 'email'], 'unique'],
+            ['email', 'email'],
+            ['username', 'string', 'min' => 4],
             ['role', 'integer'],
             ['is_change_password', 'boolean'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],

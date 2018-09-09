@@ -78,6 +78,7 @@ class ProfileController extends Controller
             try{
                 $user->save();
                 $profile->user_id = $user->id;
+                $profile->photo = $profile->uploadPhoto($profile, 'photo');
                 $profile->save();
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', 'บันทึกข้อมูลเรียบร้อย');
@@ -118,6 +119,7 @@ class ProfileController extends Controller
             try{
                 $user->save();
                 $profile->user_id = $user->id;
+                $profile->photo = $profile->uploadPhoto($profile, 'photo');
                 $profile->save();
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', 'บันทึกข้อมูลเรียบร้อย');

@@ -3,6 +3,9 @@
 namespace common\models;
 
 use Yii;
+use yii\web\UploadedFile;
+use yii\imagine\Image;
+use Imagine\Image\Box;
 
 /**
  * This is the model class for table "profile".
@@ -17,6 +20,11 @@ use Yii;
  */
 class Profile extends \yii\db\ActiveRecord
 {
+    public $username;
+    public $email;
+    
+    public $uploadPhoto = 'uploads/photo';
+    
     /**
      * {@inheritdoc}
      */
@@ -35,6 +43,7 @@ class Profile extends \yii\db\ActiveRecord
             [['user_id', 'department_id'], 'integer'],
             [['firstname', 'lastname'], 'string', 'max' => 100],
             [['user_id'], 'unique'],
+            ['photo', 'file', 'extensions' => 'jpg,png,gif'],
             [['department_id'], 'exist', 'skipOnError' => true, 'targetClass' => Department::className(), 'targetAttribute' => ['department_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -67,5 +76,27 @@ class Profile extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+    
+    public function uploadPhoto($model, $attribute)
+    {
+        $photo = UploadedFile::getInstance($model, $attribute);
+        if($photo){
+            if($model->isNewRecord || empty($model->photo)){
+                $photo_name = time().'_'.$photo->baseName.'.'.$photo->extension;
+            }else{
+                $photo_name = $model->getOldAttribute($attribute);
+            }
+            $photo->saveAs($this->getUploadPath().$photo_name);
+            Image::thumbnail($this->getUploadPath().$photo_name, 200, 300)
+                    ->resize(new Box(200, 300))
+                    ->save($this->getUploadPath().$photo_name);
+            return $photo_name;
+        }
+        return $model->isNewRecord ? false : $model->getOldAttribute($attribute);
+    }
+    public function getUploadPath()
+    {
+        return Yii::getAlias('@webroot').'/'.$this->uploadPhoto.'/';
     }
 }

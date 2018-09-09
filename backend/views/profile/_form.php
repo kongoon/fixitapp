@@ -30,6 +30,8 @@ use common\models\Department;
     <?= $form->field($profile, 'department_id')->dropDownList(ArrayHelper::map(Department::find()->all(), 'id', 'name')) ?>
     
     <?= $form->field($user, 'role')->dropDownList([1 => 'User', 9 => 'Administrator'])?>
+    
+    <?= $form->field($profile, 'photo')->fileInput()?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

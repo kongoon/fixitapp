@@ -12,6 +12,7 @@ use common\models\Profile;
  */
 class ProfileSearch extends Profile
 {
+    
     /**
      * {@inheritdoc}
      */
@@ -19,7 +20,7 @@ class ProfileSearch extends Profile
     {
         return [
             [['user_id', 'department_id'], 'integer'],
-            [['firstname', 'lastname'], 'safe'],
+            [['firstname', 'lastname', 'username', 'email'], 'safe'],
         ];
     }
 
@@ -41,13 +42,41 @@ class ProfileSearch extends Profile
      */
     public function search($params)
     {
-        $query = Profile::find();
+        $query = Profile::find()->joinWith(['user', 'department']);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            /*'sort' => [
+                'attributes' => [
+                    'username' => [
+                        'asc' => ['user.username' => SORT_ASC],
+                        'desc' => ['user.username' => SORT_DESC]
+                    ],
+                    'email' => [
+                        'asc' => ['user.email' => SORT_ASC],
+                        'desc' => ['user.email' => SORT_DESC]
+                    ],
+                    'department_id' => [
+                        'asc' => ['department.name' => SORT_ASC],
+                        'desc' => ['department.name' => SORT_DESC]
+                    ]
+                ]
+            ]*/
         ]);
+        $dataProvider->sort->attributes['username'] = [
+            'asc' => ['user.username' => SORT_ASC],
+            'desc' => ['user.username' => SORT_DESC]
+        ];
+        $dataProvider->sort->attributes['email'] = [
+            'asc' => ['user.email' => SORT_ASC],
+            'desc' => ['user.email' => SORT_DESC]
+        ];
+        $dataProvider->sort->attributes['department_id'] = [
+            'asc' => ['department.name' => SORT_ASC],
+            'desc' => ['department.name' => SORT_DESC]
+        ];
 
         $this->load($params);
 
@@ -64,7 +93,9 @@ class ProfileSearch extends Profile
         ]);
 
         $query->andFilterWhere(['like', 'firstname', $this->firstname])
-            ->andFilterWhere(['like', 'lastname', $this->lastname]);
+            ->andFilterWhere(['like', 'lastname', $this->lastname])
+                ->andFilterWhere(['like', 'user.username', $this->username])
+                ->andFilterWhere(['like', 'user.email', $this->email]);
 
         return $dataProvider;
     }

@@ -6,6 +6,7 @@ use Yii;
 use yii\web\UploadedFile;
 use yii\imagine\Image;
 use Imagine\Image\Box;
+use yii\helpers\FileHelper;
 
 /**
  * This is the model class for table "profile".
@@ -82,8 +83,9 @@ class Profile extends \yii\db\ActiveRecord
     {
         $photo = UploadedFile::getInstance($model, $attribute);
         if($photo){
+            FileHelper::createDirectory($this->getUploadPath());
             if($model->isNewRecord || empty($model->photo)){
-                $photo_name = time().'_'.$photo->baseName.'.'.$photo->extension;
+                $photo_name = time().'.'.$photo->extension;//'_'.$photo->baseName.
             }else{
                 $photo_name = $model->getOldAttribute($attribute);
             }

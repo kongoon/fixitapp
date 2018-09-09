@@ -41,7 +41,8 @@ AppAsset::register($this);
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
-        $menuItems[] = ['label' => 'รายการงานซ่อม', 'url' => ['/job/index']];
+        $jobs = \common\models\Job::find()->where(['job_status_id' => 1])->count();
+        $menuItems[] = ['label' => 'รายการงานซ่อม <span class="badge">'.$jobs.'</span>', 'url' => ['/job/index']];
         $menuItems[] = ['label' => 'การตั้งค่า', 'url' => '#', 'items' => [
             ['label' => 'หน่วยงาน', 'url' => ['/department/index']],
             ['label' => 'สถานะงาน', 'url' => ['/job-status/index']],
@@ -57,6 +58,7 @@ AppAsset::register($this);
             . '</li>';
     }
     echo Nav::widget([
+        'encodeLabels' => false,
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
     ]);

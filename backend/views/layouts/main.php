@@ -32,7 +32,7 @@ AppAsset::register($this);
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar-inverse',// navbar-fixed-top
+            'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
     $menuItems = [
@@ -43,6 +43,12 @@ AppAsset::register($this);
     } else {
         $jobs = \common\models\Job::find()->where(['job_status_id' => 1])->count();
         $menuItems[] = ['label' => 'รายการงานซ่อม <span class="badge">'.$jobs.'</span>', 'url' => ['/job/index']];
+        $menuItems[] = ['label' => 'รายงาน', 'url' => '#', 'items' => [
+            ['label' => 'รายงานรวม', 'url' => ['/report/index']],
+            ['label' => 'สรุปข้อมูลประจำเดือน', 'url' => ['/report/report1']],
+            ['label' => 'สรุปข้อมูลตามหน่วยงาน', 'url' => ['/report/report2']],
+            ['label' => 'สรุปข้อมูลตามผู้ดำเนินการ', 'url' => ['/report/report3']]
+        ]];
         $menuItems[] = ['label' => 'การตั้งค่า', 'url' => '#', 'items' => [
             ['label' => 'หน่วยงาน', 'url' => ['/department/index']],
             ['label' => 'สถานะงาน', 'url' => ['/job-status/index']],

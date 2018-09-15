@@ -72,14 +72,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model){
                     $r = '';
                     if($model->job_status_id == 1){
-                        $r .= Html::a('รับงาน', ['receive', 'id' => $model->id], ['class' => 'btn btn-xs btn-warning', 'data' => ['confirm' => 'ต้องการรับงานนี้?']]);
+                        $r .= Html::a('รับงาน', '#', ['class' => 'job-view btn btn-xs btn-warning', 'data' => ['id' => $model->id, 'act' => 'receive']]);//['receive', 'id' => $model->id]
                         $r .= ' ';
-                        $r .= Html::a('ยกเลิก', ['reject', 'id' => $model->id], ['class' => 'btn btn-xs btn-danger', 'data' => ['confirm' => 'ต้องการยกเลิกงานนี้?']]);
+                        $r .= Html::a('ยกเลิก', '#', ['class' => 'job-view btn btn-xs btn-danger', 'data' => ['id' => $model->id, 'act' => 'reject']]);//['reject', 'id' => $model->id]
                     }
                     if($model->job_status_id == 2){
-                        $r .= Html::a('งานเสร็จแล้ว', ['complete', 'id' => $model->id], ['class' => 'btn btn-xs btn-success', 'data' => ['confirm' => 'งานนี้เสร็จแล้ว?']]);
+                        $r .= Html::a('งานเสร็จแล้ว', '#', ['class' => 'job-view btn btn-xs btn-success', 'data' => ['id' => $model->id, 'act' => 'complete']]);//['complete', 'id' => $model->id]
                         $r .= ' ';
-                        $r .= Html::a('ยกเลิก', ['reject', 'id' => $model->id], ['class' => 'btn btn-xs btn-danger', 'data' => ['confirm' => 'ต้องการยกเลิกงานนี้?']]);
+                        $r .= Html::a('ยกเลิก', '#', ['class' => 'job-view btn btn-xs btn-danger', 'data' => ['id' => $model->id, 'act' => 'reject']]);//['reject', 'id' => $model->id]
                     }
                     return $r;
                 }
@@ -92,6 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', '#', ['class' => 'job-view', 
                             'data' => [
                                 'id' => $model->id,
+                                'act' => 'view',
                                 'target' => '#job-modal',
                                 'toggle' => 'modal'
                             ]
@@ -117,9 +118,11 @@ Modal::end();
 function init_click(){
     $(".job-view").click(function(e){
         var job_id = $(this).data("id");
+        var action = $(this).data("act");
         $.get("'.Url::to(['view'], true).'",
             {
-                id: job_id
+                id: job_id,
+                act: action
             },
             function(data){
                 $("#job-modal").find(".modal-body").html(data);

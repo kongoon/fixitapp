@@ -8,6 +8,9 @@ use backend\models\JobSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use common\components\AccessRule;
+use common\models\User;
 
 /**
  * JobController implements the CRUD actions for Job model.
@@ -26,6 +29,24 @@ class JobController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'ruleConfig' => [
+                    'class' => AccessRule::className()
+                ],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => [],//'index', 'view', 'update', 'delete', 'create', 'receive', 'reject', 'complete'
+                        'roles' => [User::ROLE_ADMIN]
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => ['?', User::ROLE_USER]
+                    ]
+                ]
+            ]
         ];
     }
 
@@ -50,10 +71,29 @@ class JobController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView($id, $act)
     {
+        $model = $this->findModel($id);
+      
+        if($model->load(Yii::$app->request->post())){
+            $model->repair_by = Yii::$app->user->getId();
+            $model->repair_at = time();
+            if($act == 'complete'){
+                $model->job_status_id = 3;
+            }
+            if($act == 'reject'){
+                $model->job_status_id = 4;
+            }
+            if($model->save()){
+                Yii::$app->session->setFlash('success', 'บันทึกข้อมูลเรียบร้อย');
+            }else{
+                Yii::$app->session->setFlash('error', 'เกิดข้อผิดพลาด');
+            }
+            return $this->redirect(['index']);
+        }
         return $this->renderAjax('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'act' => $act
         ]);
     }
 
@@ -165,7 +205,7 @@ class JobController extends Controller
         }else{
             Yii::$app->session->setFlash('error', 'เกิดข้อผิดพลาด');
         }
-        return $this->redirect(['index']);
+        return $this->redirect(['update', 'id' => $model->id]);
     }
     public function actionReject($id)
     {
@@ -178,6 +218,6 @@ class JobController extends Controller
         }else{
             Yii::$app->session->setFlash('error', 'เกิดข้อผิดพลาด');
         }
-        return $this->redirect(['index']);
+        return $this->redirect(['update', 'id' => $model->id]);
     }
 }

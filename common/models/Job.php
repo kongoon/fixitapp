@@ -8,19 +8,19 @@ use Yii;
  * This is the model class for table "job".
  *
  * @property int $id
- * @property string $content
- * @property string $location
- * @property int $request_by
- * @property int $request_at
- * @property string $request_tel
- * @property int $receive_by
- * @property int $receive_at
- * @property int $repair_by
- * @property int $repair_at
- * @property string $repair_detail
- * @property int $feedback
- * @property string $remark
- * @property int $job_status_id
+ * @property string $content รายการที่แจ้ง
+ * @property string $location สถานที่
+ * @property int $request_by ผู้แจ้ง
+ * @property int $request_at วันที่แจ้ง
+ * @property string $request_tel เบอร์โทรผู้แจ้ง
+ * @property int $receive_by รับเรื่องโดย
+ * @property int $receive_at รับเรื่องเมื่อ
+ * @property int $repair_by ดำเนินการโดย
+ * @property int $repair_at ดำเนินการเมื่อ
+ * @property string $repair_detail ผลการดำเนินการ
+ * @property int $feedback ประเมิน
+ * @property string $remark หมายเหตุ
+ * @property int $job_status_id สถานะ
  *
  * @property JobStatus $jobStatus
  * @property User $requestBy
@@ -62,19 +62,19 @@ class Job extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'content' => 'Content',
-            'location' => 'Location',
-            'request_by' => 'Request By',
-            'request_at' => 'Request At',
-            'request_tel' => 'Request Tel',
-            'receive_by' => 'Receive By',
-            'receive_at' => 'Receive At',
-            'repair_by' => 'Repair By',
-            'repair_at' => 'Repair At',
-            'repair_detail' => 'Repair Detail',
-            'feedback' => 'Feedback',
-            'remark' => 'Remark',
-            'job_status_id' => 'Job Status ID',
+            'content' => 'รายการที่แจ้ง',
+            'location' => 'สถานที่',
+            'request_by' => 'ผู้แจ้ง',
+            'request_at' => 'วันที่แจ้ง',
+            'request_tel' => 'เบอร์โทรผู้แจ้ง',
+            'receive_by' => 'รับเรื่องโดย',
+            'receive_at' => 'รับเรื่องเมื่อ',
+            'repair_by' => 'ดำเนินการโดย',
+            'repair_at' => 'ดำเนินการเมื่อ',
+            'repair_detail' => 'ผลการดำเนินการ',
+            'feedback' => 'ประเมิน',
+            'remark' => 'หมายเหตุ',
+            'job_status_id' => 'สถานะ',
         ];
     }
 

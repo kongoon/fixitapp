@@ -14,6 +14,13 @@ return [
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [
+        'view' => [
+            'theme' => [
+                'pathMap' => [
+                   '@app/views' => '@backend/themes/hanuman'
+                ],
+            ],
+       ],
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],

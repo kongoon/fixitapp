@@ -130,7 +130,8 @@ class ReportController extends \yii\web\Controller
         ")->queryAll();
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => $data
+            'allModels' => $data,
+            'pagination' => false
         ]);
         
         $content = $this->renderPartial('_pdf', [
@@ -144,6 +145,7 @@ class ReportController extends \yii\web\Controller
         $fontData = $defaultFontConfig['fontdata'];
 
         $mpdf = new \Mpdf\Mpdf([
+            'orientation' => 'L',
             'fontDir' => array_merge($fontDirs, [
                 Yii::getAlias('@webroot').'/fonts',
             ]),
@@ -158,9 +160,20 @@ class ReportController extends \yii\web\Controller
         ]);
         
         $style = file_get_contents(Yii::getAlias('@webroot').'/css/kv-mpdf-bootstrap.css');
-
+        $mpdf->SetHTMLFooter('{PAGENO} จาก {nbpg}');
         $mpdf->WriteHTML($style, 1);
         $mpdf->WriteHTML($content, 2);
+        
+        $mpdf->AddPage('P','',1,'','off');
+        $mpdf->SetHTMLFooter('{PAGENO} จาก {nbpg}');
+        $mpdf->WriteHTML($style, 1);
+        $mpdf->WriteHTML($content, 2);
+        
+        $mpdf->AddPage('L','',1,'','off');
+        $mpdf->SetHTMLFooter('{PAGENO} จาก {nbpg}');
+        $mpdf->WriteHTML($style, 1);
+        $mpdf->WriteHTML($content, 2);
+        
         $mpdf->Output();
     }
 

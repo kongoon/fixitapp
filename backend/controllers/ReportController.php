@@ -109,7 +109,33 @@ class ReportController extends \yii\web\Controller
     
     public function actionReport1Pdf2()
     {
-        $content = $this->renderPartial('_pdf');
+        $data = Yii::$app->db->createCommand("
+            SELECT YEAR(FROM_UNIXTIME(repair_at)) AS y,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 1, 1, 0)) AS m01,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 2, 1, 0)) AS m02,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 3, 1, 0)) AS m03,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 4, 1, 0)) AS m04,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 5, 1, 0)) AS m05,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 6, 1, 0)) AS m06,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 7, 1, 0)) AS m07,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 8, 1, 0)) AS m08,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 9, 1, 0)) AS m09,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 10, 1, 0)) AS m10,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 11, 1, 0)) AS m11,
+            SUM(IF(MONTH(FROM_UNIXTIME(repair_at)) = 12, 1, 0)) AS m12
+            FROM job
+            WHERE job_status_id = 3
+            GROUP BY YEAR(FROM_UNIXTIME(repair_at))
+            ORDER BY y DESC
+        ")->queryAll();
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $data
+        ]);
+        
+        $content = $this->renderPartial('_pdf', [
+            'dataProvider' => $dataProvider
+        ]);
         
         $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
         $fontDirs = $defaultConfig['fontDir'];
@@ -131,7 +157,10 @@ class ReportController extends \yii\web\Controller
             'default_font' => 'thsarabun'
         ]);
         
-        $mpdf->WriteHTML($content);
+        $style = file_get_contents(Yii::getAlias('@webroot').'/css/kv-mpdf-bootstrap.css');
+
+        $mpdf->WriteHTML($style, 1);
+        $mpdf->WriteHTML($content, 2);
         $mpdf->Output();
     }
 
